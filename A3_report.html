@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>A3 — Critique & Redesign: NYT COVID-19 Spiral</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,ital,wght@8..60,0,400;8..60,0,600;8..60,0,700;8..60,1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Ink-on-paper palette */
+    --ink:        #1f1d1a;   /* warm near-black, like dark pencil */
+    --ink-soft:   #4d4843;
+    --ink-faint:  #8a8278;
+    --graphite:   #5a5750;
+    --rule:       #c9c2b5;   /* pencil-grey hairline */
+    --rule-faint: #e6dfd0;
+
+    /* Paper */
+    --paper:      #f6f1e4;   /* cream, like aged sketch paper */
+    --paper-warm: #efe7d2;   /* slightly deeper for cards */
+    --paper-edge: #ddd2b6;
+
+    /* Accents — restrained */
+    --accent:     #2c3e5c;   /* ink-blue, primary accent */
+    --accent-red: #8a3a32;   /* oxidized red, used only for emphasis & §I drop cap */
+
+    --measure:      1200px;
+    --measure-wide: 1200px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  /* ---------- Paper background ----------
+     A faint graph-paper grid baked into the body via two layered
+     gradients. Kept very low-contrast so it reads as texture. */
+  body {
+    margin: 0;
+    color: var(--ink);
+    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
+    font-size: 18px;
+    line-height: 1.65;
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(to right,  rgba(90, 87, 80, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(90, 87, 80, 0.06) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: -1px -1px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .wrap      { max-width: var(--measure);      margin: 0 auto; padding: 0 8px; }
+  .wrap-wide { max-width: var(--measure-wide); margin: 0 auto; padding: 0 8px; }
+
+  /* ---------- Type roles ----------
+     Source Serif 4 — body, headings, ledes, captions
+     IBM Plex Sans  — micro-labels (eyebrow, section labels, meta, footer)
+     IBM Plex Mono  — numerals only (sketch numbers, dates)
+     No script faces. */
+
+  /* ---------- Header ---------- */
+  header.masthead {
+    padding: 88px 0 56px;
+    margin-bottom: 56px;
+    position: relative;
+  }
+  header.masthead::after {
+    /* hand-drawn rule — a slightly wavering line via SVG inline */
+    content: "";
+    display: block;
+    height: 6px;
+    margin-top: 48px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 6' preserveAspectRatio='none'><path d='M0,3 C80,1 160,5 240,3 C320,1.5 400,4.5 480,3 C540,2 580,4 600,3' stroke='%235a5750' stroke-width='1' fill='none' stroke-linecap='round'/></svg>");
+    background-repeat: repeat-x;
+    background-size: 600px 6px;
+    opacity: 0.55;
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent-red);
+    margin: 0 0 18px;
+  }
+
+  h1.title {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 4.5vw, 3.25rem);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    margin: 0 0 24px;
+    max-width: 80ch;
+    color: var(--ink);
+  }
+
+  .dek {
+    font-family: "Source Serif 4", serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    margin: 0 0 36px;
+    max-width: 10s0ch;
+  }
+
+  .meta {
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--graphite);
+  }
+  .meta span + span::before {
+    content: "·";
+    margin: 0 10px;
+    color: var(--rule);
+  }
+
+  /* ---------- Section structure ---------- */
+  section { margin-bottom: 88px; }
+
+  .section-label {
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+
+  h2 {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 600;
+    font-size: 2rem;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 32px;
+    color: var(--ink);
+    position: relative;
+  }
+  h2::after {
+    /* short pencil underline beneath each h2 */
+    content: "";
+    display: block;
+    width: 64px;
+    height: 4px;
+    margin-top: 14px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 4' preserveAspectRatio='none'><path d='M0,2 C16,1 32,3 48,2 C56,1.5 60,2.5 64,2' stroke='%232c3e5c' stroke-width='1.4' fill='none' stroke-linecap='round'/></svg>");
+    background-repeat: no-repeat;
+    background-size: 64px 4px;
+  }
+
+  h3 {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.3;
+    margin: 0 0 12px;
+    color: var(--ink);
+  }
+
+  p { margin: 0 0 1.15em; }
+
+  p.lede::first-letter {
+    font-family: "Source Serif 4", serif;
+    font-size: 3.6em;
+    float: left;
+    line-height: 0.85;
+    padding: 6px 10px 0 0;
+    font-weight: 700;
+    color: var(--accent-red);
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 1px;
+    transition: background 0.15s;
+  }
+  a:hover { background: rgba(44, 62, 92, 0.08); }
+
+  /* ---------- Lists ---------- */
+  ul.insights {
+    list-style: none;
+    padding: 0 0 0 26px;
+    margin: 0 0 1.5em;
+    border-left: 2px solid var(--accent-red);
+  }
+  ul.insights li {
+    margin-bottom: 14px;
+    position: relative;
+  }
+  ul.insights li::before {
+    /* annotation dash — replaces the previous handwritten arrow */
+    content: "—";
+    color: var(--accent-red);
+    position: absolute;
+    left: -28px;
+    top: 0;
+    font-family: "Source Serif 4", serif;
+    font-weight: 600;
+  }
+
+  ul.rationale {
+    list-style: none;
+    padding: 0;
+    margin: 18px 0 0;
+  }
+  ul.rationale li {
+    position: relative;
+    padding-left: 22px;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+  ul.rationale li::before {
+    /* check-bullet, sketchbook style */
+    content: "◦";
+    position: absolute;
+    left: 4px;
+    top: -1px;
+    color: var(--accent);
+    font-size: 1.2em;
+  }
+  ul.rationale li strong {
+    color: var(--ink);
+    font-weight: 600;
+    font-style: italic;
+  }
+
+  /* Prose-form rationale (one paragraph per sketch with inline italic
+     lead-ins; replaces the bulleted form for sketch sections). */
+  p.rationale-prose {
+    margin: 16px 0 0;
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  p.rationale-prose em:first-of-type,
+  p.rationale-prose em {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  /* ---------- Figures ---------- */
+  figure { margin: 36px 0; }
+
+  figure img {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: white;
+    /* soft pencil-toned border + subtle shadow as if pinned to paper */
+    border: 1px solid var(--rule);
+    box-shadow:
+      0 1px 0 rgba(90, 87, 80, 0.04),
+      0 8px 18px -10px rgba(31, 29, 26, 0.18);
+  }
+
+  figcaption {
+    font-family: "Source Serif 4", serif;
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-faint);
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--rule);
+  }
+  figcaption strong {
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--graphite);
+    margin-right: 10px;
+  }
+
+  /* ---------- Sketch gallery — cards as if pinned to the page ---------- */
+  .sketches {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 64px;
+    margin-top: 40px;
+  }
+
+  .sketch {
+    background: var(--paper-warm);
+    padding: 32px 30px 28px;
+    border: 1px solid var(--paper-edge);
+    box-shadow:
+      0 1px 0 rgba(90, 87, 80, 0.04),
+      0 14px 28px -16px rgba(31, 29, 26, 0.22);
+    position: relative;
+  }
+  /* tiny faux-tape strip — single, restrained */
+  .sketch::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 100px;
+    height: 18px;
+    transform: translateX(-50%) rotate(-1.5deg);
+    background: rgba(255, 245, 200, 0.55);
+    border: 1px solid rgba(180, 160, 100, 0.18);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+
+  /* Vary rotation slightly across the three sketches so they feel placed,
+     not stamped. Kept under 1° to stay readable. */
+  .sketches .sketch:nth-child(1) { transform: rotate(-0.4deg); }
+  .sketches .sketch:nth-child(2) { transform: rotate( 0.3deg); }
+  .sketches .sketch:nth-child(3) { transform: rotate(-0.2deg); }
+
+  .sketch-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+  .sketch-grid img {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: white;
+    border: 1px solid var(--rule);
+    box-shadow: 0 6px 14px -10px rgba(31,29,26,0.25);
+  }
+
+  .sketch-number {
+    font-family: "IBM Plex Mono", "SF Mono", monospace;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent-red);
+    margin: 0 0 6px;
+  }
+
+  @media (max-width: 1000px) {
+    .sketch-grid { grid-template-columns: 1fr; }
+    .sketches .sketch { transform: none !important; }
+  }
+
+  /* ---------- Final design ---------- */
+  .final-figure { margin: 44px 0; }
+  .final-figure img {
+    width: 100%;
+    height: auto;
+    display: block;
+    background: white;
+    border: 1px solid var(--rule);
+    box-shadow:
+      0 1px 0 rgba(90,87,80,0.04),
+      0 18px 36px -20px rgba(31,29,26,0.28);
+  }
+
+  /* ---------- Writeup ---------- */
+  .writeup p:first-of-type { font-size: 1.04rem; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    padding: 40px 0 80px;
+    margin-top: 80px;
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    position: relative;
+  }
+  footer::before {
+    content: "";
+    display: block;
+    height: 6px;
+    margin-bottom: 32px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 6' preserveAspectRatio='none'><path d='M0,3 C80,4 160,2 240,3 C320,4 400,2 480,3 C540,3.5 580,2.5 600,3' stroke='%235a5750' stroke-width='1' fill='none' stroke-linecap='round'/></svg>");
+    background-repeat: repeat-x;
+    background-size: 600px 6px;
+    opacity: 0.5;
+  }
+
+  /* ---------- Print ---------- */
+  @media print {
+    body { background: white; background-image: none; }
+    .sketch { background: white; box-shadow: none; transform: none !important; }
+    .sketch::before { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">Assignment 3 · Critique &amp; Redesign</p>
+    <h1 class="title">Reading the Spiral: A Redesign of the NYT COVID-19 Chart</h1>
+    <p class="dek">
+      The "tapeworm of doom" makes a striking image of the Omicron wave, but its visual rhetoric contradicts the optimistic forecast it was published to support. My redesign tries to recover both <em>comparability</em> and <em>narrative honesty</em>.
+    </p>
+    <p class="meta">
+      <span>Vis &amp; Society 2026</span>
+      <span>Ching Lam Choi</span>
+      <span>Spring 2026</span>
+    </p>
+  </div>
+</header>
+
+<!-- ============================================================
+     SECTION 1 — The Original & Initial Readings
+     ============================================================ -->
+<section id="original">
+  <div class="wrap">
+    <p class="section-label">I · The Original</p>
+    <h2>What the spiral shows</h2>
+
+    <p class="lede">
+      On January 6, 2022, at the peak of the Omicron wave, The New York Times
+      Opinion section ran a guest essay by Dr. Jeffrey Shaman, a Columbia epidemiologist
+      whose team built one of the first COVID-19 models. He argued that the United States
+      would record more cases that month than in any prior month of the pandemic, but
+      that a smaller fraction of those cases would become severe. The article led with
+      the spiral chart pictured above, designed by Gus Wezerek and Sara Chodosh.
+    </p>
+
+    <figure>
+      <center>
+      <img src="original.png" alt="Original NYT spiral chart of US COVID-19 cases from 2020 through January 2022." style="width: 60%"/>
+    </center>
+      <figcaption>
+        <strong>Original visualization.</strong>
+        <em>"Here's When We Expect Omicron to Peak"</em>, by Jeffrey Shaman.
+        Graphics by Gus Wezerek and Sara Chodosh.
+        <a href="https://www.nytimes.com/2022/01/06/opinion/omicron-covid-us.html">New York Times Opinion</a>,
+        January 6, 2022.
+      </figcaption>
+    </figure>
+
+    <h3>What can be read off the chart</h3>
+    <ul class="insights">
+      <li>
+        <strong>Three discrete waves, each larger than the last.</strong>
+        The spiral has three pronounced swells — summer 2020, winter
+        2020–21, and the January 2022 Omicron spike — and they
+        escalate in visible thickness.
+      </li>
+      <li>
+        <strong>Omicron breaks the frame.</strong>
+        The January 2022 plume bursts vertically off the canvas, far
+        beyond any earlier band. This is the chart's unmistakable lead
+        and the rhetorical reason it exists.
+      </li>
+      <li>
+        <strong>Major peaks cluster at the top of the spiral: winter.</strong>
+        Both non-Omicron peaks fall near January, suggesting a seasonal
+        pattern. (One does wonder how much of this clustering is real and how much is manufactured by the angular layout.)
+      </li>
+      <li>
+        <strong>A pronounced summer 2020 hump</strong> sits at the bottom of
+        the inner ring, around July 2020: the smallest of the named
+        waves but clearly visible.
+      </li>
+      <li>
+        <strong>The first months of 2020 are nearly invisible.</strong>
+        The innermost coil shows almost no width: cases were either
+        genuinely low or, more likely, severely undercounted in early
+        pandemic reporting.
+      </li>
+      <li>
+        <strong>The chart ends in mid-flight.</strong>
+        The outer band tapers but does not close — a deliberate signal
+        that the Omicron wave was still unfolding at publication.
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 2 — Critique
+     ============================================================ -->
+<section id="critique">
+  <div class="wrap">
+    <p class="section-label">II · Critique</p>
+    <h2>What works, and what doesn't</h2>
+
+    <p>
+      The chart's strongest move is rhetorical alignment with the moment.
+      The January 2022 Omicron plume bursts vertically off the canvas — a
+      visceral break in an otherwise contained shape — and that single
+      gesture communicates "this wave is different" before a reader has
+      parsed any axis. The clockwise angular encoding leverages a
+      calendrical convention readers genuinely hold (months as positions
+      on a circle), and the spiral's continuity embeds the wave in a
+      longer pandemic timeline the reader already shares as lived memory.
+      As an op-ed image, it earns the pause its place on the page demands.
+    </p>
+
+    <p>
+      The chart's central design choice, however, is in tension with the
+      argument the article is making. Comparing magnitudes between waves
+      requires reading band thickness on a curving baseline: position,
+      the strongest visual channel, is converted into something much
+      weaker. The question Shaman's piece depends on — <em>"how does
+      Omicron compare to last winter?"</em> — is not answerable in a
+      glance. The metaphorical register compounds the problem: a
+      tightening, ever-expanding spiral connotes <em>escalation without
+      end</em>, exactly the opposite of Shaman's actually-optimistic
+      forecast that the wave will peak and recede within weeks. The chart
+      visually shouts <em>we are spiralling out</em> while the prose
+      argues the opposite. Smaller issues compound this: no entry point,
+      no quantitative axis behind the legend's "150K cases" tick, and no
+      sign of hospitalizations or deaths — which Shaman explicitly names
+      as the <em>actually-relevant</em> burden. The redesign opportunity
+      is not to strip the drama the op-ed earned, but to recover two
+      things: <em>comparability</em> across waves, and <em>narrative
+      honesty</em> between the visual gestalt and the article's
+      conclusion.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 3 — Sketches
+     ============================================================ -->
+<section id="sketches">
+  <div class="wrap">
+    <p class="section-label">III · Sketches</p>
+    <h2>Three directions</h2>
+    <p>
+      The critique gives the redesign two charges: <em>recover comparability</em>
+      across waves, and <em>recover narrative honesty</em> between the visual
+      gestalt and Shaman's actually-optimistic argument. The three sketches
+      below take deliberately different routes: one foregrounding seasonal
+      rhythm, one foregrounding the cases-versus-severity decoupling, and one
+      trying to do both at once.
+    </p>
+
+    <div class="sketches">
+
+      <!-- Sketch 1 -->
+      <!-- NOTE: Image should be a *photo of a pen-and-paper sketch* per the
+           assignment ("with pen and paper!"). Don't digitize or redraw. -->
+      <article class="sketch">
+        <div class="sketch-grid">
+          <img src="sketch1.jpeg" alt="Hand-drawn sketch of a stacked ridgeline chart showing four years of US COVID-19 cases." style="width: 100%;"/>
+          <div>
+            <p class="sketch-number">SKETCH 01</p>
+            <h3>Four Winters — annotated ridgeline by year</h3>
+            <p class="rationale-prose">
+              <em>Motivation —</em> recover the spiral's seasonal reading on a layout where waves are directly comparable, with each year a separate shape on a shared baseline.
+              <em>Hoped communication —</em> year-on-year comparisons answerable at a glance (<em>was Delta bigger than winter 2020–21?</em>), with variant labels riding on the relevant ridges so the narrative sits inside the chart.
+              <em>Worked / didn't —</em> comparability and seasonality both read clearly, but the chart loses the spiral's "one continuous pandemic" gestalt, and cases remain the only encoded variable.
+              <em>To explore next —</em> cases alone aren't the article's argument; the next sketch should put a second variable on the page and see what happens to the visual rhythm.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Sketch 2 -->
+      <article class="sketch">
+        <div class="sketch-grid">
+          <img src="sketch2.jpeg" alt="Hand-drawn sketch showing cases, hospitalizations, and deaths as three rescaled curves on a shared timeline." />
+          <div>
+            <p class="sketch-number">SKETCH 02</p>
+            <h3>The Decoupling — cases, hospitalizations, and deaths, rescaled</h3>
+            <p class="rationale-prose">
+              <em>Motivation —</em> pull Shaman's actual argument — the ratio of cases to severe outcomes — onto the page directly, with three series sharing a horizontal timeline, each rescaled to its own peak so all are visible together.
+              <em>Hoped communication —</em> the visible gap that opens between the case curve and the death curve in late 2021 (when vaccines arrived and Omicron began) is itself the takeaway; vaccine and variant markers carry the why.
+              <em>Worked / didn't —</em> foregrounds the article's scientific claim, which Sketch 01 misses entirely, but rescaling sacrifices absolute magnitudes: readers can compare shapes but not numbers, and the "Omicron broke the scale" feeling is gone.
+              <em>To explore next —</em> can a single chart preserve seasonal pattern, show magnitude honestly, <em>and</em> hint at the severity story? A calendar-style heatmap with a second-variable strip might carry that load.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Sketch 3 -->
+      <article class="sketch">
+        <div class="sketch-grid">
+          <img src="sketch3.jpeg" alt="Hand-drawn sketch of a calendar heatmap with rows for years and columns for weeks, plus a severity strip across the top." />
+          <div>
+            <p class="sketch-number">SKETCH 03</p>
+            <h3>Pandemic Calendar — heatmap grid with a severity strip</h3>
+            <p class="rationale-prose">
+              <em>Motivation —</em> try to do both at once: rows = years, columns = weeks, cell color encoding case magnitude on a single shared scale, and a thin strip across the top encoding the severity ratio.
+              <em>Hoped communication —</em> three readings in one image — <em>when</em> waves happened, <em>how big</em>, and <em>how lethal</em> — with the visual punchline being the Omicron block, densely colored cells beneath a conspicuously low severity line.
+              <em>Worked / didn't —</em> compact, dense, still visually distinctive; not a chart type the average op-ed reader sees every week, so it earns its space the way the spiral did; the cost is that color is a coarser channel than position, so readers walk away with patterns rather than numbers.
+              <em>To carry into the final —</em> this is the candidate to develop; open questions about per-capita normalization, the exact severity proxy, and color-scale calibration are deferred to the rationale in Section V.
+            </p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 4 — Final design (wider container)
+     ============================================================ -->
+<section id="final">
+  <div class="wrap-wide">
+    <p class="section-label">IV · Final Design</p>
+    <h2>Two Pandemics in One</h2>
+
+    <figure class="final-figure">
+      <center>
+      <img src="visualization.png" alt="Calendar heatmap of weekly US COVID-19 cases from 2020 to 2022, with a case-fatality-ratio strip above. Rows are years, columns are weeks. The January 2022 Omicron wave is highlighted as the densest cells in the chart, while the severity strip above shows that deaths-per-case were highest in early 2020 and lowest during Omicron." style="width: 80%;"/>
+    </center>
+      <figcaption>
+        <strong>Final design.</strong>
+        Weekly US confirmed cases (heatmap) and lagged case-fatality ratio (strip), 2020–2022. Source: Google COVID-19 Open Data.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============================================================
+     SECTION 5 — Writeup
+     ============================================================ -->
+<section id="writeup" class="writeup">
+  <div class="wrap">
+    <p class="section-label">V · Rationale &amp; Reflection</p>
+    <h2>Design rationale</h2>
+
+    <h3>Rationale &amp; encoding choices</h3>
+    <p>
+      The redesign argues a single claim: the United States lived
+      through <em>two</em> pandemics — one defined by case counts, one
+      by lethality — that peaked a year apart. The mark is a calendar
+      heatmap with a layered severity strip. Years occupy three rows
+      and weeks occupy fifty-three columns of <em>position</em> reserved for the comparisons that
+      matter most: when, and which year. Cell <em>color</em> encodes
+      case magnitude, where pattern is enough. The case-fatality ratio
+      sits on the strip in position-on-y, giving the article's central
+      scientific claim its strongest possible channel. Daily counts are
+      aggregated to ISO weeks to suppress noise; the color scale is
+      square-root rather than linear because cases span four orders of
+      magnitude; the CFR is computed with a two-week lag to honor the
+      epidemiological gap between infection and death; and early 2020
+      is dropped from the strip because testing was too sparse to be
+      meaningful. The colormap deliberately avoids red, an alarm color
+      that would import the spiral's panicked register into a chart
+      making an optimistic argument, and is anchored at the page's
+      cream so empty cells disappear. What this design loses: the
+      spiral's iconic lead-image quality. It is a <em>reading</em>
+      chart, not a <em>seeing</em> chart; the smaller 2020 waves read
+      paler than they felt at the time; and the CFR is itself a flawed
+      severity proxy.
+    </p>
+
+    <h3>Reflection: critique by redesign</h3>
+    <p>
+      The redesign substantially recovers comparability: the question
+      <em>was Delta bigger than winter 2020-21?</em>, unanswerable from
+      the spiral, is now a comparison of two columns of
+      differently-saturated blue; and partially recovers narrative
+      honesty, with a calmer gestalt and a severity strip that carries
+      Shaman's actual claim. But "critique by redesign" surfaced a
+      tension the initial critique didn't quite see: a single chart
+      cannot hold <em>both</em> visceral op-ed impact <em>and</em>
+      analytical comparability. The spiral's drama was load-bearing
+      for its place on a Sunday opinion page; a reader scrolling past
+      would stop at the spiral, and will not, in the same way, stop at
+      a calendar heatmap. The redesign chose comparability and accepts
+      the loss. A fully realized op-ed version might honestly need both
+      charts — the spiral as visceral lead, the calendar as body figure.
+      The deeper lesson is that pandemic data resists single-chart
+      treatment because it tracks several phenomena at once, moving at
+      different paces. An honest critique should always specify
+      <em>which</em> argument it is critiquing the design against; a
+      redesign is not "better" in the abstract, only better at a
+      specific argument.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Vis &amp; Society 2026 · Assignment 3</p>
+  </div>
+</footer>
+
+</body>
+</html>
